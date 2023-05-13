@@ -1,11 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
+import {Inject, Injectable} from '@nestjs/common';
 import { Todo } from './todo.model';
 
 @Injectable()
 export class TodoService {
     constructor(
-        @InjectModel(Todo)
+        @Inject('TODO_REPOSITORY')
         private todoModel: typeof Todo,
     ) {}
 
