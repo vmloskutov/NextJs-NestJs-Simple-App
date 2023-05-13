@@ -1,23 +1,42 @@
-# Dockerfile for Next.js frontend
+# Install dependencies only when needed
+FROM node:16-alpine AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
 
-# Specify the base image
-FROM node:16-alpine
+# Rebuild the source code only when needed
+FROM node:16-alpine AS builder
 
-# Set the working directory
 WORKDIR /app
 
-# Install app dependencies
-COPY package*.json ./
-RUN npm ci --only=production
+COPY --from=deps /app/node_modules ./node_modules
 
-# Copy app source code
 COPY . .
 
-# Build the Next.js app
 RUN npm run build
 
-# Expose the application port
+# Production image, copy all the files and run next
+FROM node:16-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV production
+
+RUN addgroup --system --gid 1001 bloggroup
+RUN adduser --system --uid 1001 bloguser
+
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/package.json ./package.json
+
+# Automatically leverage output traces to reduce image size
+# https://nextjs.org/docs/advanced-features/output-file-tracing
+COPY --from=builder --chown=bloguser:bloggroup /app/.next/standalone ./
+COPY --from=builder --chown=bloguser:bloggroup /app/.next/static ./.next/static
+
+USER bloguser
+
 EXPOSE 3000
 
-# Start the app
-CMD ["npm", "start"]
+ENV PORT 3000
+
+CMD ["node", "server.js"]

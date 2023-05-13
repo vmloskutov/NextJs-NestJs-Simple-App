@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend-container
+          image: vmloskutov/nestjs-todo-app:latest
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: backend-configmap
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: POSTGRES_PASSWORD
