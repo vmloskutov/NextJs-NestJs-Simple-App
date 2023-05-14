@@ -6,5 +6,5 @@ data:
   POSTGRES_DB: todo_app
   POSTGRES_USER: myuser
   POSTGRES_PASSWORD: mypassword
-  POSTGRES_HOST: localhost
-  POSTGRES_PORT: "5432"
+  DB_HOST: host.docker.internal
+  DB_PORT: "5432"

@@ -11,7 +11,6 @@ interface CreateTodo {
     completed?: boolean;
 }
 
-
 interface Todo {
     id: number;
     title: string;

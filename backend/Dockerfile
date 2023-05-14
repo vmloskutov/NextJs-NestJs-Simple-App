@@ -1,23 +1,20 @@
-# Dockerfile for Next.js frontend
+# Base image
+FROM node:16
 
-# Specify the base image
-FROM node:16-alpine
+# Create app directory
+WORKDIR /usr/src/app
 
-# Set the working directory
-WORKDIR /src
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+COPY package*.json ./
 
 # Install app dependencies
-COPY package*.json ./
-RUN npm ci --only=production
+RUN npm install
 
-# Copy app source code
+# Bundle app source
 COPY . .
 
-# Build the Next.js app
+# Creates a "dist" folder with the production build
 RUN npm run build
 
-# Expose the application port
-EXPOSE 3000
-
-# Start the app
-CMD ["npm", "start"]
+# Start the server using the production build
+CMD [ "node", "dist/main.js" ]
