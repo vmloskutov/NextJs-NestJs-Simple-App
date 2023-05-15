@@ -3,8 +3,6 @@ import TodoForm from '../components/TodoForm';
 import TodoList from '../components/TodoList';
 import getConfig from "next/config";
 
-const { publicRuntimeConfig: config } = getConfig();
-
 interface CreateTodo {
     id?: number;
     title: string;
@@ -17,17 +15,18 @@ interface Todo {
     completed: boolean;
 }
 
-const TodoPage: React.FC = () => {
+function TodoPage() {
+    const { publicRuntimeConfig } = getConfig();
+    const apiUrl = publicRuntimeConfig.apiUrl;
     const [todos, setTodos] = useState<Todo[]>([]);
-    console.log('[config]: ', config)
-    console.log('[process.env]: ', process.env.NEXT_PUBLIC_API_URL)
+
     useEffect(() => {
         fetchTodos();
     }, []);
 
     const fetchTodos = async () => {
         try {
-            const response = await fetch(`${config.apiUrl}/todos`);
+            const response = await fetch(`${apiUrl}/todos`);
             const data = await response.json();
             setTodos(data);
         } catch (error) {
@@ -37,7 +36,7 @@ const TodoPage: React.FC = () => {
 
     const addTodo = async (newTodo: CreateTodo) => {
         try {
-            const response = await fetch(`${config.apiUrl}/todos`, {
+            const response = await fetch(`${apiUrl}/todos`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -54,7 +53,7 @@ const TodoPage: React.FC = () => {
     const completeTodo = async (id: number) => {
 
         try {
-            const response = await fetch(`${config.apiUrl}/todos/${id}/complete`, {
+            const response = await fetch(`${apiUrl}/todos/${id}/complete`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -81,5 +80,7 @@ const TodoPage: React.FC = () => {
         </div>
     );
 };
+
+TodoPage.getInitialProps = () => ({})
 
 export default TodoPage;

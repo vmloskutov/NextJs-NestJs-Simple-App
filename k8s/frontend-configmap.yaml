@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: frontend-configmap
 data:
-  NEXT_PUBLIC_API_URL: http://backend.example.com/api
+  NEXT_PUBLIC_API_URL: http://minikube.local/api
